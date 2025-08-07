@@ -10,7 +10,7 @@ nodesRdd = spark.sparkContext.textFile(nodesFile).map(lambda line: line.split("\
 edgesRdd = spark.sparkContext.textFile(edgesFile).map(lambda line: line.split("\t"))
 
 def queryOne():
-    result = edgesRdd.filter(lambda cols: cols[1] in ["CtD", "CpD", "CbG"])
+    result = edgesRdd.filter(lambda cols: cols[1] in ["CtD", "CpD", "CbG", "CuG", "CdG"])
     result = result.map(lambda cols:
                         (cols[0], (
                             1 if cols[2].__contains__("Gene") else 0,
@@ -34,7 +34,7 @@ def queryTwo():
     spark.createDataFrame(result, ["n drugs", "#diseases"]).show()
 
 def queryThree():
-    result = edgesRdd.filter(lambda cols: cols[1] == "CbG")
+    result = edgesRdd.filter(lambda cols: cols[1] in ["CbG", "CuG", "CdG"])
     result = result.map(lambda cols: (cols[0], 1))
     result = result.reduceByKey(mergeValue)
     result = result.join(nodesRdd.map(lambda line: (line[0], line[1])))
